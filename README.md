@@ -49,7 +49,7 @@ if(get_option('custom_plugins') !== false) {
 }
 ```
 
-- 2. Accédez au répertoire cloné :
+2. Accédez au répertoire cloné :
      `cd OVS-WP-Setup`
 
 3. Créer une nouvelle branche
