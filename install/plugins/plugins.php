@@ -23,16 +23,16 @@ function loadPlugin()
     foreach ($plugins as $value) {
         $results[] = ManagerFiles::installExternalFile($value, 'plugin');
     }
-    $customPlugins = array('ovs-entity','ovs-page-error');
+    $customPlugins = array('git@github.com:DevteamOverscan/OVS-WP-Entity.git','git@github.com:DevteamOverscan/OVS-WP-Error-Page.git');
 
-    if (!get_option('custom_plugins', false)) {
-        update_option('custom_plugins', $customPlugins);
-    }
-
+    $customPluginsName = [];
     foreach ($customPlugins as $value) {
-        $results[] = ManagerFiles::unzipFile(dirname(__FILE__) . '/'.
-        $value .'.zip', ABSPATH . 'wp-content/mu-plugins');
+        preg_match('/\/([^\/]+)\.git$/', $value, $matches);
+        $customPluginsName[] = $matches[1];
+        $results[] = ManagerFiles::installPluginFromGit($value);
     }
+    update_option('custom_plugins', $customPluginsName);
+
     if(in_array(false, $results)) {
         wp_send_json(array('status' => 'error',
             'message' => $results));

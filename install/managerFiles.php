@@ -112,5 +112,22 @@ class ManagerFiles
 
         return rmdir($dir);
     }
+    public static function installPluginFromGit($repo_url)
+    {
+        $path_dir = dirname(__FILE__, 3);
+        // Récupérer le nom du dépôt
+        $pattern = '/\/([^\/]+)\.git$/'; // Expression régulière pour capturer le nom du dépôt
+        preg_match($pattern, $repo_url, $matches);
 
+        if (isset($matches[1]) && file_exists($path_dir . '/' . $matches[1])) {
+            return $matches[1] . 'déjà installé. Supprimer le fichier et relancer le processus d\'installation';
+        }
+        // Changer le répertoire de travail vers mu-plugins
+        chdir($path_dir);
+
+        // Exécuter la commande Git en utilisant shell_exec
+        $output = shell_exec("git clone {$repo_url}");
+
+        return $matches[1];
+    }
 }
