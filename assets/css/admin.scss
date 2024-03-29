@@ -1,0 +1,107 @@
+$success: #0fa54b;
+$info: #0ac9c9;
+$warning: #ffd012;
+$danger: #ff2b02;
+
+.wp-admin {
+	.install-modal {
+		position: fixed;
+		top: 0;
+		height: 0;
+		background-color: rgba(#111, $alpha: 0.8);
+		height: 100vh;
+		width: 100vw;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000000;
+		line-height: normal;
+		transition: opacity 500ms ease-out;
+		.wrapper {
+			background-color: #fff;
+			border-radius: 10px;
+			width: clamp(300px, 35vw, 50vw);
+			padding: 2rem;
+			text-align: center;
+			form {
+				sup {
+					color: $danger;
+				}
+				.theme {
+					input {
+						display: block;
+						min-width: 320px;
+						margin: 1rem auto;
+						border-color: #111;
+						text-align: center;
+					}
+				}
+			}
+			button {
+				background-color: $success;
+				color: #fff;
+				margin: 0 1rem;
+				padding: 0.5rem 2rem;
+				border-radius: 3px;
+				font-size: 1rem;
+				border: transparent 1px solid;
+				cursor: pointer;
+			}
+			.action {
+				a {
+					color: $danger;
+					margin: 0 1rem;
+				}
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				column-gap: 1rem;
+				div {
+					text-align: left;
+				}
+				label {
+					display: block;
+					margin-bottom: 1rem;
+				}
+			}
+			#progress-bar {
+				.list {
+					.icon-spinner {
+						animation: spinner 1000ms infinite linear;
+					}
+					.icon-check-circle1 {
+						color: $success;
+					}
+					.icon-close-outline {
+						color: $danger;
+					}
+				}
+			}
+			.progress-bar {
+				height: 10px;
+				width: 70%;
+				background-color: #e5e5e5;
+				border-radius: 1000px;
+				margin: auto;
+				overflow: hidden;
+				#progress {
+					background-color: $success;
+					height: 100%;
+					transition: all 300ms ease-in-out;
+				}
+			}
+		}
+		&.remove {
+			opacity: 0;
+		}
+	}
+}
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
