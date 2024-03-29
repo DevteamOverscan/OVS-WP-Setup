@@ -10,23 +10,15 @@ Certain dossier sont supprimer à la fin du processus lancer par le plugin pour 
 
 ## Étapes
 
-Accédez au répertoire cloné :
-bash
-Copy code
-cd OVS-WP-Setup
-1. Créer une nouvelle branche
-Utilisez la commande git checkout -b pour créer une nouvelle branche à partir de votre branche actuelle.
+1. Accédez au répertoire cloné :
+`cd OVS-WP-Setup`
 
-bash
-Copy code
-git checkout -b ma-branche
-2. Déconnecter la branche de la branche principale
-Travaillez localement sur votre nouvelle branche sans avoir besoin de la relier à la branche principale. Vous pouvez commencer à effectuer vos modifications sans impacter la branche principale.
+2. Créer une nouvelle branche
+Utilisez la commande `git checkout -b nom-de-ma-nouvelle-branche` pour créer une nouvelle branche à partir de votre branche actuelle. Le nom de votre nouvelle branche doit correspondre au nom du projet Wordpress sur lequel est mis en place le plugin.
 
-3. Pousser la nouvelle branche
-Une fois que vous avez terminé vos modifications et que vous souhaitez les pousser vers le dépôt distant, utilisez la commande git push avec l'option -u pour définir l'upstream de votre branche.
+3. Déconnecter la branche de la branche principale
+Utilisez la commande git push avec l'option -u pour définir l'upstream de votre branche.
 
-bash
-Copy code
-git push -u origin ma-branche
+`git push -u origin ma-branche`
+
 Cela créera votre branche sur le dépôt distant, sans qu'elle ne soit liée à la branche principale. Vous pouvez continuer à travailler sur cette branche sans impacter la branche principale.
