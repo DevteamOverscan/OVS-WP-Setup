@@ -62,6 +62,14 @@ if(get_option('custom_plugins') !== false) {
 
 Cela créera votre branche sur le dépôt distant, sans qu'elle ne soit liée à la branche principale. Vous pouvez continuer à travailler sur cette branche sans impacter la branche principale.
 
-```
+## SMTP
 
+Il faut que les variables suivantes soient définis dans le wp-config :
+
+```php
+define('SMTP_HOST', 'smtp.example.com');
+define('SMTP_PORT', 587);
+define('SMTP_USERNAME', '');
+define('SMTP_PASSWORD', '');
+define('SMTP_SECURE', 'tls');
 ```
