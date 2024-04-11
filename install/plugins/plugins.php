@@ -18,7 +18,7 @@ if (file_exists(dirname(__DIR__) . '/managerFiles.php')) {
 
 function loadPlugin()
 {
-    $plugins = array('contact-form-7','wp-seopress','resmushit-image-optimizer','webp-converter-for-media','two-factor');
+    $plugins = array('contact-form-7','wp-seopress','resmushit-image-optimizer','webp-converter-for-media','two-factor','jetpack','litespeed-cache');
     $results = [];
     foreach ($plugins as $value) {
         $results[] = ManagerFiles::installExternalFile($value, 'plugin');
