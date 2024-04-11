@@ -121,6 +121,7 @@ class SetUp
                 'duplicate-post-page',
             'security-force-brut',
             'security-wp',
+            'perform',
             ));
         }
         foreach (get_option('features') as $file) {
