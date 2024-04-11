@@ -251,6 +251,7 @@ Header set Cache-Control "private, must-revalidate"
 </IfModule>
 <IfModule mod_expires.c>
     ExpiresActive On
+    ExpiresByType text/html "access plus 1 day"
     ExpiresByType text/css A31536000
     ExpiresByType text/x-component A31536000
     ExpiresByType application/x-javascript A31536000
