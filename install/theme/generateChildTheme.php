@@ -32,8 +32,10 @@ function init()
 }
 function loadTheme()
 {
-    if(!ManagerFiles::installExternalFile($_POST['theme'], 'theme')) {
-        return false;
+    if(!is_dir(ABSPATH . '/wp-content/themes/'. $_POST['theme'])) {
+        if(!ManagerFiles::installExternalFile($_POST['theme'], 'theme')) {
+            return false;
+        }
     }
     if(!ManagerFiles::unzipFile(dirname(__FILE__) . '/ovs.zip', ABSPATH . 'wp-content/themes/')) {
         return false;
