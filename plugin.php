@@ -55,7 +55,7 @@ class Plugin
      */
     public function __construct()
     {
-        register_activation_hook(__FILE__, array($this, 'plugin_activation'));
+        
         register_deactivation_hook(__FILE__, array($this, 'plugin_deactivation'));
         add_action('admin_enqueue_scripts', array($this, 'admin_include_script'), 11);
 
@@ -63,7 +63,8 @@ class Plugin
         $setup = new SetUp();
         $setup->init();
         if (!get_option('ovs_activated', false)) {
-            $this->plugin_activation();
+            register_activation_hook(__FILE__, array($this, 'plugin_activation'));
+            // $this->plugin_activation();
             update_option('ovs_activated', true);
         }
 
