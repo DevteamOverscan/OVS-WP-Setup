@@ -236,7 +236,9 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      * @since 4.6.0
      */
     do_action('login_header');
-
+    $custom_logo_id = get_theme_mod('custom_logo');
+    $custom_logo_data = wp_get_attachment_image_src($custom_logo_id, 'full');
+    $custom_logo_url = $custom_logo_id ? $custom_logo_data[0] : '';
     ?>
         <div id="login">
             <div class="wrapper">
