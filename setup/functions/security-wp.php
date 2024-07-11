@@ -44,11 +44,6 @@ remove_action('wp_print_styles', 'print_emoji_styles');
 
 remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0); // Remove shortlink
 
-
-// --------------------------------------- //
-// --     Désactive xml rcp     -- //
-// --------------------------------------- //
-add_filter('xmlrcp_enabled', '__return_false');
 // --------------------------------------- //
 // --     Change l'access à l'admin     -- //
 // --------------------------------------- //
@@ -130,3 +125,36 @@ function custom_error_pages()
     }
 }
 add_action('wp', 'custom_error_pages');
+
+
+// ------------------------------------------------ //
+// --     Désactive l'énumération des comptes    -- //
+// ------------------------------------------------ //
+
+// Rediriger les requêtes d'énumération des utilisateurs vers la page d'accueil
+function redirect_user_enumeration_attempt()
+{
+    if (is_user_admin()) {
+        return; // Ne pas rediriger les utilisateurs administrateurs
+    }
+
+    if (preg_match('/\?author=([0-9]*)/', $_SERVER['REQUEST_URI'])) {
+        wp_redirect(home_url(), 301);
+        exit();
+    }
+}
+add_action('template_redirect', 'redirect_user_enumeration_attempt');
+
+// Désactiver les en-têtes d'erreur de l'API REST pour les requêtes utilisateur
+function disable_user_enumeration_rest_api($response, $handler, $request)
+{
+    if (strpos($request->get_route(), '/wp/v2/users') !== false) {
+        $response = new WP_Error(
+            'rest_disabled',
+            __('L\'énumération des utilisateurs est désactivée.'),
+            array( 'status' => 403 )
+        );
+    }
+    return $response;
+}
+add_filter('rest_pre_dispatch', 'disable_user_enumeration_rest_api', 10, 3);

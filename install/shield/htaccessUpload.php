@@ -30,7 +30,7 @@ function htaccessUpload()
 </IfModule>
 # END DISABLE PHP ENGINE
 ";
-    $htaccessFile = ABSPATH . '/wp-content/uploads/.htaccess';
+    $htaccessFile = ABSPATH . WP_CONTENT_FOLDERNAME . '/uploads/.htaccess';
 
     $results = file_put_contents($htaccessFile, $rules, FILE_APPEND | LOCK_EX);
     return $results;

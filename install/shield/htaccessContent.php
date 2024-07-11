@@ -24,7 +24,7 @@ Allow from all
 Allow From All
 </FilesMatch>
 ";
-    $htaccessFile = ABSPATH . '/wp-content/.htaccess';
+    $htaccessFile = ABSPATH . WP_CONTENT_FOLDERNAME . '/.htaccess';
     $results = file_put_contents($htaccessFile, $rules, FILE_APPEND | LOCK_EX);
     return $results;
 

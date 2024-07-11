@@ -32,12 +32,12 @@ function init()
 }
 function loadTheme()
 {
-    if(!is_dir(ABSPATH . '/wp-content/themes/'. $_POST['theme'])) {
+    if(!is_dir(ABSPATH . WP_CONTENT_FOLDERNAME . '/themes/'. $_POST['theme'])) {
         if(!ManagerFiles::installExternalFile($_POST['theme'], 'theme')) {
             return false;
         }
     }
-    if(!ManagerFiles::unzipFile(dirname(__FILE__) . '/ovs.zip', ABSPATH . 'wp-content/themes/')) {
+    if(!ManagerFiles::unzipFile(dirname(__FILE__) . '/ovs.zip', ABSPATH . WP_CONTENT_FOLDERNAME . '/themes/')) {
         return false;
     }
 
@@ -61,8 +61,8 @@ Version:        1.0
 */
 
 ";
-    $filesPath = [ABSPATH . 'wp-content/themes/ovs/style.scss', ABSPATH . '/wp-content/themes/ovs/style.css'];
-    if (file_exists(ABSPATH . 'wp-content/themes/ovs')) {
+    $filesPath = [ABSPATH . WP_CONTENT_FOLDERNAME . '/themes/ovs/style.scss', ABSPATH . WP_CONTENT_FOLDERNAME . '/themes/ovs/style.css'];
+    if (file_exists(ABSPATH . WP_CONTENT_FOLDERNAME . '/themes/ovs')) {
         foreach ($filesPath as $key => $filePath) {
             if ($key === 0 && !file_exists($filePath)) {
                 $results = file_put_contents($filePath, $content . '@import "assets/css/front/index";', FILE_APPEND | LOCK_EX);

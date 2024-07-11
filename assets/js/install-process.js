@@ -1,4 +1,4 @@
-const INSTALL_URL = "/wp-content/mu-plugins/ovs/install/install.php";
+// const INSTALL_URL = "/mu-plugins/ovs/install/install.php";
 const SELECTORS = {
 	INSTALL_MODAL: ".install-modal",
 	INSTALL_WRAPPER: ".install-modal .wrapper",
@@ -189,14 +189,33 @@ function checkInstall() {
 }
 
 async function removeInstallProcess() {
-	return fetch(ajaxurl, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
-		body: new URLSearchParams({
-			action: "install_ajax",
-			function: "remove",
-		}),
-	});
+	console.log("remove");
+	try {
+		let response = await fetch(ajaxurl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: new URLSearchParams({
+				action: "install_ajax",
+				function: "remove",
+			}),
+		});
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+
+		let result = await response.json();
+
+		if (result.success) {
+			// Déconnexion réussie, rediriger vers la page d'accueil
+			window.location.href = "/";
+		} else {
+			console.error("Error from server:", result);
+		}
+	} catch (error) {
+		console.error("Fetch error:", error);
+	}
 }
+

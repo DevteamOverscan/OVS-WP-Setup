@@ -8,16 +8,28 @@
  */
 
 
-if (file_exists(dirname(__DIR__) . '/managerFiles.php')) {
-    require_once dirname(__DIR__) . '/managerFiles.php';
+if (file_exists(dirname(__DIR__) . '/install/managerFiles.php')) {
+    require_once dirname(__DIR__) . '/install/managerFiles.php';
 }
 
 function install()
 {
 
     if(isset($_POST['function']) && $_POST['function'] === 'remove') {
+        require_once dirname(__FILE__) . '/shield/redirect-login.php';
+        redirectLoginURL();
+        hide_login();
         update_option('install', true);
         ManagerFiles::deleteDirectory(dirname(__FILE__));
+
+        wp_send_json(array(
+            'status' => 'success',
+            'message' => 'Installation complete terminée!'
+        ));
+
+        wp_logout();
+
+
     }
 
     if (isset($_POST['function']) && $_POST['function'] === 'theme') {

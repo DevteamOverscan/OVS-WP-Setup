@@ -55,7 +55,7 @@ class Plugin
      */
     public function __construct()
     {
-        
+
         register_deactivation_hook(__FILE__, array($this, 'plugin_deactivation'));
         add_action('admin_enqueue_scripts', array($this, 'admin_include_script'), 11);
 
@@ -123,11 +123,16 @@ class Plugin
                 if (file_exists($filepath)) {
                     require_once $filepath;
                 } else {
-                    trigger_error("Error locating `$filepath` for inclusion!", E_USER_ERROR);
+                    // Log a warning instead of triggering an error
+                    error_log("Warning: File `$filepath` not found for inclusion!");
                 }
             }
+        } else {
+            // Optionally log a message if the plugin path is not a directory
+            error_log("Warning: Directory `$pluginPath` does not exist!");
         }
     }
+
 }
 
 // Instantiate Plugin Class
