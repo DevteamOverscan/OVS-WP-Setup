@@ -52,7 +52,16 @@ if(get_option('custom_plugins') !== false) {
 2. Accédez au répertoire cloné :
      `cd OVS-WP-Setup`
 
-3. Supprimer la connexion/synchronisation au repo.
-   `git remote remove origin`
-   Ainsi les modification n'impacteront pas le code source se trouvant sur le repo.
+3. Créer une nouvelle branche
+   Utilisez la commande `git checkout -b nom-de-ma-nouvelle-branche` pour créer une nouvelle branche à partir de votre branche actuelle. Le nom de votre nouvelle branche doit correspondre au nom du projet Wordpress sur lequel est mis en place le plugin.
 
+4. Déconnecter la branche de la branche principale
+   Utilisez la commande git push avec l'option -u pour définir l'upstream de votre branche.
+
+`git push -u origin ma-branche`
+
+Cela créera votre branche sur le dépôt distant, sans qu'elle ne soit liée à la branche principale. Vous pouvez continuer à travailler sur cette branche sans impacter la branche principale.
+
+```
+
+```

@@ -14,12 +14,10 @@ $auth = get_option('ovs_auth', false);
 
 if(!empty($_GET['action']) and $_GET['action'] !== 'rp') {
     if (!isset($_COOKIE['ovs-key']) || $_COOKIE['ovs-key'] !== $auth) {
-        exit;
+        header("Location: index.php?access_denied=1");
+        exit();
     }
 }
-
-/** Make sure that the WordPress bootstrap has run before continuing. */
-require __DIR__ . '/wp-load.php';
 
 // Redirect to HTTPS login if forced to use SSL.
 if (force_ssl_admin() && ! is_ssl()) {
@@ -243,7 +241,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
         <div id="login">
             <div class="wrapper">
 
-            <div class="head">
+                <div class="head">
                     <?php if(!empty($custom_logo_id)) {
                         $logo = '<img src="' . esc_url($custom_logo_url) . '"
                             alt="' . esc_attr(get_bloginfo('name')) . '" />';
@@ -256,7 +254,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
                     </h1>
                     <h2>Connexion</h2>
                 </div>
-            <?php
+                <?php
     /**
      * Filters the message to display above the login form.
      *
@@ -365,8 +363,8 @@ function login_footer($input_id = '')
     // Don't allow interim logins to navigate away from the page.
     if (! $interim_login) {
         ?>
-            <p id="backtoblog">
-                <?php
+                <p id="backtoblog">
+                    <?php
             $html_link = sprintf(
                 '<a href="%s">%s</a>',
                 esc_url(home_url('/')),
@@ -385,8 +383,8 @@ function login_footer($input_id = '')
          */
         echo apply_filters('login_site_html_link', $html_link);
         ?>
-            </p>
-            <?php
+                </p>
+                <?php
 
         the_privacy_policy_link('<div class="privacy-policy-page-link">', '</div>');
     }
@@ -1132,7 +1130,8 @@ switch ($action) {
     </p>
 
     <p class="description indicator-hint">
-        <?php echo wp_get_password_hint(); ?></p>
+        <?php echo wp_get_password_hint(); ?>
+    </p>
 
     <?php
 

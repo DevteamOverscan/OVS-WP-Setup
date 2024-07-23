@@ -19,7 +19,7 @@ remove_action('wp_head', 'wp_generator');
 // --    Security - Disable XML-RCP       -- //
 // ----------------------------------------- //
 add_filter('xmlrpc_enabled', '__return_false');
-add_filter('rest_jsonp_enabled', '__return_false');
+// add_filter('rest_jsonp_enabled', '__return_false');
 
 // ------------------------------------------------- //
 // --  Security - Disable ALL infos Wordpress     -- //
@@ -92,17 +92,33 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data)
 
 }
 
-//Redirection sur la page d'accueil à la déconnexion
-add_action('wp_logout', 'redirectLogout');
-function redirectLogout()
+
+// Vérifier et détruire le cookie personnalisé lors de la déconnexion
+function custom_woocommerce_logout()
 {
-    if (isset($_COOKIE['ovs-key'])) {
-        setcookie('ovs-key', null, -1, '/');
-        unset($_COOKIE['ovs-key']);
+    if (isset($_COOKIE['ovs_auth'])) {
+        setcookie('ovs_auth', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN); // Détruire le cookie
     }
-    wp_safe_redirect(home_url());
+    wp_logout(); // Déconnecter l'utilisateur
+    wp_redirect(home_url('/ovs-connect.php')); // Redirection après déconnexion
     exit;
 }
+add_action('wp_logout', 'custom_woocommerce_logout');
+
+// Vérifier le nonce et gérer la redirection personnalisée
+function custom_logout_redirect()
+{
+    if (!is_user_logged_in() && isset($_GET['action']) && $_GET['action'] == 'logout') {
+        if (wp_verify_nonce($_GET['_wpnonce'], 'log-out')) {
+            wp_redirect(home_url('/ovs-connect.php')); // Redirection vers la page de connexion personnalisée
+        } else {
+            wp_redirect(home_url('/access-denied')); // Redirection en cas de nonce invalide
+        }
+        exit;
+    }
+}
+add_action('template_redirect', 'custom_logout_redirect');
+
 
 
 //rendu de la page forbidden
