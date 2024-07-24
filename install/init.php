@@ -22,19 +22,27 @@ function setup_ajax()
     }
 }
 setup_ajax();
+
 // --------------------------------------------------------------//
 // --  Installation des fichiers de base  -- //
 // ------------------------------------------------------------- //
 
-if(is_admin() && !get_option('install', false) && !wp_doing_ajax()) {
-    echo '<div class="install-modal">';
-    echo '<div class="wrapper">';
-    echo '<h1>Installation des éléments de base</h1>';
-    echo '<p>Avant de poursuivre sur l\'interface d\'administration de Wordpress veuillez installer les éléments nécessaire au bon fonctionnement du site</p>';
-    echo '<div class="action">';
-    echo '<a href="' . wp_logout_url() . '" class="annule">' . __('Annuler', 'ovs') . '</a>';
-    echo '<button type="button" class="install">' . __('Continuer', 'ovs') . '</button>';
-    echo '</div>';
-    echo '</div>';
-    echo '</div>';
+function display_install_modal()
+{
+    if (is_admin() && !get_option('install', false) && !wp_doing_ajax()) {
+        ?>
+        <div class="install-modal">
+            <div class="wrapper">
+                <h1>Installation des éléments de base</h1>
+                <p>Avant de poursuivre sur l'interface d'administration de WordPress, veuillez installer les éléments nécessaires au bon fonctionnement du site.</p>
+                <div class="action">
+                    <a href="<?php echo wp_logout_url(); ?>" class="annule"><?php _e('Annuler', 'ovs'); ?></a>
+                    <button type="button" class="install"><?php _e('Continuer', 'ovs'); ?></button>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
 }
+add_action('admin_notices', 'display_install_modal');
+?>

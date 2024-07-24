@@ -2,7 +2,7 @@
 /**
  *
  * @package OVS
- * @author Clément Vacheron
+ * @autor Clément Vacheron
  * @link https://www.overscan.com
  */
 
@@ -14,6 +14,15 @@ if (!defined('ABSPATH')) {
 --------------------------------------------------*/
 function htaccessUpload()
 {
+    $uploadDir = ABSPATH . WP_CONTENT_FOLDERNAME . '/uploads';
+    $htaccessFile = $uploadDir . '/.htaccess';
+
+    // Vérifie si le dossier uploads existe, sinon le crée
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    // Règles .htaccess à ajouter
     $rules = "
 # BEGIN DISABLE PHP ENGINE
 <Files *>
@@ -30,8 +39,12 @@ function htaccessUpload()
 </IfModule>
 # END DISABLE PHP ENGINE
 ";
-    $htaccessFile = ABSPATH . WP_CONTENT_FOLDERNAME . '/uploads/.htaccess';
 
+    // Écrit les règles dans le fichier .htaccess
     $results = file_put_contents($htaccessFile, $rules, FILE_APPEND | LOCK_EX);
+
     return $results;
 }
+
+// Appelle la fonction htaccessUpload
+htaccessUpload();

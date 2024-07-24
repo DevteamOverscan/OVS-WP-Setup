@@ -89,18 +89,16 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data)
 
 
     return $message;
-
 }
-
 
 // Vérifier et détruire le cookie personnalisé lors de la déconnexion
 function custom_woocommerce_logout()
 {
-    if (isset($_COOKIE['ovs_auth'])) {
-        setcookie('ovs_auth', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN); // Détruire le cookie
+    if (isset($_COOKIE['ovs-key'])) {
+        setcookie('ovs-key', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN); // Détruire le cookie
     }
     wp_logout(); // Déconnecter l'utilisateur
-    wp_redirect(home_url('/ovs-connect.php')); // Redirection après déconnexion
+    wp_redirect(home_url()); // Redirection vers la page d'accueil après déconnexion
     exit;
 }
 add_action('wp_logout', 'custom_woocommerce_logout');
@@ -110,7 +108,7 @@ function custom_logout_redirect()
 {
     if (!is_user_logged_in() && isset($_GET['action']) && $_GET['action'] == 'logout') {
         if (wp_verify_nonce($_GET['_wpnonce'], 'log-out')) {
-            wp_redirect(home_url('/ovs-connect.php')); // Redirection vers la page de connexion personnalisée
+            wp_redirect(home_url()); // Redirection vers la page d'accueil
         } else {
             wp_redirect(home_url('/access-denied')); // Redirection en cas de nonce invalide
         }
@@ -119,9 +117,7 @@ function custom_logout_redirect()
 }
 add_action('template_redirect', 'custom_logout_redirect');
 
-
-
-//rendu de la page forbidden
+// Rendu de la page forbidden
 function custom_error_pages()
 {
     global $wp_query;
@@ -141,7 +137,6 @@ function custom_error_pages()
     }
 }
 add_action('wp', 'custom_error_pages');
-
 
 // ------------------------------------------------ //
 // --     Désactive l'énumération des comptes    -- //
@@ -168,7 +163,7 @@ function disable_user_enumeration_rest_api($response, $handler, $request)
         $response = new WP_Error(
             'rest_disabled',
             __('L\'énumération des utilisateurs est désactivée.'),
-            array( 'status' => 403 )
+            array('status' => 403)
         );
     }
     return $response;

@@ -140,7 +140,13 @@ function loadFunction(event,action) {
 			if (response.ok) {
 				return response.json();
 			} else {
-				throw new Error("Échec de la requête AJAX");
+				return response.json().then((err) => {
+					throw new Error(
+						`Échec de la requête AJAX: ${response.status} ${
+							response.statusText
+						} - ${err.message || JSON.stringify(err)}`
+					);
+				});
 			}
 		})
 		.then((data) => {
