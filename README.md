@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
 }
 
 //Package d'installation
-require WPMU_PLUGIN_DIR . '/ovs/ovs.php';
+require WPMU_PLUGIN_DIR . '/OVS-WP-Setup/ovs.php';
 
 if(get_option('custom_plugins') !== false) {
     foreach (get_option('custom_plugins') as $plugin) {
@@ -49,7 +49,7 @@ if(get_option('custom_plugins') !== false) {
 }
 ```
 
-- 2. Accédez au répertoire cloné :
+2. Accédez au répertoire cloné :
      `cd OVS-WP-Setup`
 
 3. Créer une nouvelle branche

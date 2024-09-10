@@ -47,35 +47,6 @@ class SetUp
         $this->loadFeatures();
 
     }
-    public function hide_login()
-    {
-        // Ajouter le fichier à la racine du site lors de l'activation
-        $source = plugin_dir_path(__FILE__) . 'login/';
-        $files = array('ovs-connect.php','ovs-authentification.php');
-        foreach($files as $f) {
-            $source_file = $source . $f;
-            $destination = ABSPATH . $f;
-            if(!file_exists($source_file)) {
-                echo "<p style='background-color:#ffcc00;color:#333;font-weight:700;padding:1rem;'>Le fichier source $source_file n'existe pas.</p>";
-                continue;
-            }
-            if (!file_exists($destination) && file_exists($source_file)) {
-                copy($source_file, $destination);
-            }
-            if(file_exists(ABSPATH . 'xmlrpc.php')) {
-                unlink(ABSPATH . 'xmlrpc.php');
-            }
-            if(file_exists(ABSPATH . 'wp-login.php')) {
-                unlink(ABSPATH . 'wp-login.php');
-            }
-        }
-
-        if(file_exists(plugin_dir_path(__FILE__) . 'redirect-login.php')) {
-            require_once plugin_dir_path(__FILE__) . 'redirect-login.php';
-            unlink(plugin_dir_path(__FILE__) . 'redirect-login.php');
-        }
-
-    }
 
     // --------------------------------------------------------------//
     // --  Personnalisation de la page Connexion  -- //

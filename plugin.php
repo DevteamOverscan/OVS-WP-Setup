@@ -55,7 +55,7 @@ class Plugin
      */
     public function __construct()
     {
-        register_activation_hook(__FILE__, array($this, 'plugin_activation'));
+
         register_deactivation_hook(__FILE__, array($this, 'plugin_deactivation'));
         add_action('admin_enqueue_scripts', array($this, 'admin_include_script'), 11);
 
@@ -63,7 +63,8 @@ class Plugin
         $setup = new SetUp();
         $setup->init();
         if (!get_option('ovs_activated', false)) {
-            $this->plugin_activation();
+            register_activation_hook(__FILE__, array($this, 'plugin_activation'));
+            // $this->plugin_activation();
             update_option('ovs_activated', true);
         }
 
@@ -78,6 +79,8 @@ class Plugin
         // JS
 
         wp_enqueue_script('admin-ovs', plugin_dir_url(__FILE__) . '/assets/js/admin.js', null, false, true);
+        wp_enqueue_script('alert-ovs', plugin_dir_url(__FILE__) . '/assets/js/alert.js', null, false, true);
+
         //CSS
         wp_enqueue_style('admin-icon', plugin_dir_url(__FILE__) . '/assets/pictofont/style.css', false, '1.0.0');
         wp_enqueue_style('admin-form', plugin_dir_url(__FILE__) . '/assets/css/admin-form.css', false, '1.0.0');
@@ -87,7 +90,6 @@ class Plugin
     public function plugin_activation()
     {
         $setup = new SetUp();
-        $setup->hide_login();
         wp_logout();
         exit;
 
@@ -120,11 +122,16 @@ class Plugin
                 if (file_exists($filepath)) {
                     require_once $filepath;
                 } else {
-                    trigger_error("Error locating `$filepath` for inclusion!", E_USER_ERROR);
+                    // Log a warning instead of triggering an error
+                    error_log("Warning: File `$filepath` not found for inclusion!");
                 }
             }
+        } else {
+            // Optionally log a message if the plugin path is not a directory
+            error_log("Warning: Directory `$pluginPath` does not exist!");
         }
     }
+
 }
 
 // Instantiate Plugin Class
