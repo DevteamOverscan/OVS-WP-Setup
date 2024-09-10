@@ -77,7 +77,6 @@ class Plugin
         // Enqueue scripts and styles
         // JS
 
-        wp_enqueue_script('admin-setup', plugin_dir_url(__FILE__) . '/assets/js/install-process-min.js', null, false, true);
         wp_enqueue_script('admin-ovs', plugin_dir_url(__FILE__) . '/assets/js/admin.js', null, false, true);
         //CSS
         wp_enqueue_style('admin-icon', plugin_dir_url(__FILE__) . '/assets/pictofont/style.css', false, '1.0.0');
@@ -112,7 +111,6 @@ class Plugin
     {
         $roots_includes = array(
             'setup',
-            'install',
         );
         $pluginPath = __DIR__;
 

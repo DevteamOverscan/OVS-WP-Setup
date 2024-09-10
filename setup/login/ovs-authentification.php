@@ -246,14 +246,13 @@ wp_print_inline_script_tag(wp_remove_surrounding_empty_script_tags(ob_get_clean(
                         $logo = '<img src="' . esc_url($custom_logo_url) . '"
                             alt="' . esc_attr(get_bloginfo('name')) . '" />';
                     } else {
-                        $logo = $login_header_text;
+                        $logo = get_bloginfo('name');
                     }
     ?>
                     <h1><a
                             href="<?php echo esc_url($login_header_url); ?>"><?= $logo ?></a>
                     </h1>
-                    <h2><?= get_bloginfo('name') ?>
-                    </h2>
+                    <h2>Connexion</h2>
                 </div>
                 <?php
     /**

@@ -122,6 +122,7 @@ class SetUp
             'security-force-brut',
             'security-wp',
             'perform',
+            'smtp'
             ));
         }
         foreach (get_option('features') as $file) {
