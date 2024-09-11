@@ -47,18 +47,18 @@ remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0); // Remove shortlink
 // --------------------------------------- //
 // --     Change l'access à l'admin     -- //
 // --------------------------------------- //
-//Modification de l'adresse de déconnection
-add_filter('logout_url', 'custom_logout_url');
-function custom_logout_url($default)
+//Modification de l'adresse de déconnexion
+add_filter('logout_url', 'custom_logout_url', 10, 2);
+function custom_logout_url($logout_url, $redirect)
 {
-    return str_replace('wp-login', 'ovs-authentification', $default);
+    return wp_nonce_url(home_url('/ovs-authentification.php?action=logout'), 'log-out');
 }
 
-//Modification de l'adress de connection
-add_filter('login_url', 'custom_login_url');
-function custom_login_url($default)
+//Modification de l'adresse de connexion
+add_filter('login_url', 'custom_login_url', 10, 3);
+function custom_login_url($login_url, $redirect, $force_reauth)
 {
-    return str_replace('wp-login', 'ovs-authentification', $default);
+    return str_replace('wp-login', 'ovs-authentification', $login_url);
 }
 
 //Modification du lien du reset password
@@ -75,9 +75,9 @@ function my_lostpassword_url()
 
     return site_url('/ovs-authentification.php?action=lostpassword');
 }
+
 //Modification du lien du reset password dans le mail envoyé à l'utilisateur
 add_filter("retrieve_password_message", "mapp_custom_password_reset", 99, 4);
-
 function mapp_custom_password_reset($message, $key, $user_login, $user_data)
 {
     /* translators: %s: User login. */
@@ -87,15 +87,14 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data)
 
     $message .= wp_login_url() . "\r\n";
 
-
     return $message;
 }
 
-// Vérifier et détruire le cookie personnalisé lors de la déconnexion
+// Supprimer le cookie ovs-key lors de la déconnexion
 function custom_woocommerce_logout()
 {
     if (isset($_COOKIE['ovs-key'])) {
-        setcookie('ovs-key', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN); // Détruire le cookie
+        setcookie('ovs-key', '', time() - 3600, '/', COOKIE_DOMAIN); // Détruire le cookie
     }
     wp_logout(); // Déconnecter l'utilisateur
     wp_redirect(home_url()); // Redirection vers la page d'accueil après déconnexion
@@ -163,7 +162,7 @@ function disable_user_enumeration_rest_api($response, $handler, $request)
         $response = new WP_Error(
             'rest_disabled',
             __('L\'énumération des utilisateurs est désactivée.'),
-            array( 'status' => 403 )
+            array('status' => 403)
         );
     }
     return $response;
