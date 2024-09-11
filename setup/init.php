@@ -87,13 +87,13 @@ class SetUp
 
     private function loadFeatures()
     {
-        if(!get_option('features', false)) {
+        if (!get_option('features', false)) {
             update_option('features', array(
                 'duplicate-post-page',
             'security-force-brut',
             'security-wp',
             'perform',
-            'smtp'
+            'tarte-au-citron'
             ));
         }
         foreach (get_option('features') as $file) {
