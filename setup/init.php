@@ -92,7 +92,7 @@ class SetUp
                 'duplicate-post-page',
             'security-force-brut',
             'security-wp',
-            'perform',
+            'remove-comments',
             'tarte-au-citron'
             ));
         }
