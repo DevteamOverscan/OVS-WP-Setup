@@ -90,6 +90,32 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data)
     return $message;
 }
 
+
+// Modification du lien pour définir un nouveau mot de passe, dans le mail envoyé à la suite de l'inscription d'un nouveau user
+add_filter('wp_new_user_notification_email', 'custom_new_user_email', 10, 3);
+
+function custom_new_user_email($wp_new_user_notification_email, $user, $blogname) {
+    $reset_key = get_password_reset_key($user);
+    
+    if (is_wp_error($reset_key)) {
+        return $wp_new_user_notification_email;
+    }
+
+    $reset_link = network_site_url("ovs-authentification.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
+
+    $wp_new_user_notification_email['subject'] = sprintf(__('Bienvenue sur %s – Définissez votre mot de passe'), $blogname);
+    $wp_new_user_notification_email['message'] = sprintf(
+        __("Bonjour %s,\n\nUn compte a été créé pour vous sur %s.\n\nPour définir votre mot de passe, cliquez sur le lien suivant :\n\n%s\n\nSi vous n'avez pas demandé cela, ignorez cet email.\n\nCordialement,\nL'équipe de %s"),
+        $user->user_login,
+        $blogname,
+        $reset_link,
+        $blogname
+    );
+
+    return $wp_new_user_notification_email;
+}
+
+
 // Supprimer le cookie ovs-key lors de la déconnexion
 function custom_woocommerce_logout()
 {
