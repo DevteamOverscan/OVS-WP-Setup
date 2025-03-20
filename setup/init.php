@@ -16,6 +16,15 @@ class SetUp
 {
     public function init()
     {
+        // --------------------------------------------- //
+        // --  Vérifier si la stack est Bedrock  -- //
+        // --------------------------------------------- //
+        $wp_siteurl = getenv('WP_SITEURL');
+
+        if (!empty($wp_siteurl) && strpos($wp_siteurl, '/wp') !== false) {
+            define('WP_CONTENT_FOLDERNAME', 'app');
+        }
+
 
         add_action('login_enqueue_scripts', array($this,'my_login'));
 
