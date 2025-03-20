@@ -22,6 +22,7 @@ class SetUp
         $wp_siteurl = getenv('WP_SITEURL');
 
         if (!empty($wp_siteurl) && strpos($wp_siteurl, '/wp') !== false) {
+            define('WP_STACK', 'bedrock');
             define('WP_CONTENT_FOLDERNAME', 'app');
         }
 

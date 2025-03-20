@@ -58,7 +58,8 @@ function custom_logout_url($logout_url, $redirect)
 add_filter('login_url', 'custom_login_url', 10, 3);
 function custom_login_url($login_url, $redirect, $force_reauth)
 {
-    return str_replace('wp-login', 'ovs-authentification', $login_url);
+    $is_bedrock = defined('WP_STACK') && WP_STACK === 'bedrock';
+    return str_replace($is_bedrock ? 'wp/wp-login' : 'wp-login', 'ovs-authentification', $login_url);
 }
 
 //Modification du lien du reset password
