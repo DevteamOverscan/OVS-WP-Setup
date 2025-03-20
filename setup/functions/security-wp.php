@@ -51,7 +51,7 @@ remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0); // Remove shortlink
 add_filter('logout_url', 'custom_logout_url', 10, 2);
 function custom_logout_url($logout_url, $redirect)
 {
-    return wp_nonce_url(home_url('/ovs-authentification.php?action=logout'), 'log-out');
+    return wp_nonce_url(home_url('ovs-authentification.php?action=logout'), 'log-out');
 }
 
 //Modification de l'adresse de connexion
@@ -73,7 +73,7 @@ function my_lostpassword_url()
         setcookie("ovs-key", $auth, strtotime("+1 week"), '/');
     }
 
-    return site_url('/ovs-authentification.php?action=lostpassword');
+    return home_url('/ovs-authentification.php?action=lostpassword');
 }
 
 //Modification du lien du reset password dans le mail envoyé à l'utilisateur
@@ -83,7 +83,7 @@ function mapp_custom_password_reset($message, $key, $user_login, $user_data)
     /* translators: %s: User login. */
     $message  = sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";
     $message .= __('To set your password, visit the following address:') . "\r\n\r\n";
-    $message .= network_site_url("ovs-authentification.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . "\r\n\r\n";
+    $message .= home_url("ovs-authentification.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . "\r\n\r\n";
 
     $message .= wp_login_url() . "\r\n";
 
@@ -101,7 +101,7 @@ function custom_new_user_email($wp_new_user_notification_email, $user, $blogname
         return $wp_new_user_notification_email;
     }
 
-    $reset_link = network_site_url("ovs-authentification.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
+    $reset_link = home_url("ovs-authentification.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
 
     $wp_new_user_notification_email['subject'] = sprintf(__('Bienvenue sur %s – Définissez votre mot de passe'), $blogname);
     $wp_new_user_notification_email['message'] = sprintf(
