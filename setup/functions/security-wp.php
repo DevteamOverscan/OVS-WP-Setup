@@ -17,8 +17,8 @@ remove_action('wp_head', 'wp_generator');
 
 // ----------------------------------------- //
 // --    Security - Disable XML-RCP       -- //
-// ----------------------------------------- //
 add_filter('xmlrpc_enabled', '__return_false');
+// ----------------------------------------- //
 // add_filter('rest_jsonp_enabled', '__return_false');
 
 // ------------------------------------------------- //
@@ -171,16 +171,18 @@ add_action('wp', 'custom_error_pages');
 // Rediriger les requêtes d'énumération des utilisateurs vers la page d'accueil
 function redirect_user_enumeration_attempt()
 {
+
     if (is_user_admin()) {
         return; // Ne pas rediriger les utilisateurs administrateurs
     }
 
-    if (preg_match('/\?author=([0-9]*)/', $_SERVER['REQUEST_URI'])) {
+    if (is_author() || isset($_GET['author'])) {
         wp_redirect(home_url(), 301);
-        exit();
+        exit;
     }
+
 }
-add_action('template_redirect', 'redirect_user_enumeration_attempt');
+add_action('parse_request', 'redirect_user_enumeration_attempt');
 
 // Désactiver les en-têtes d'erreur de l'API REST pour les requêtes utilisateur
 function disable_user_enumeration_rest_api($response, $handler, $request)
