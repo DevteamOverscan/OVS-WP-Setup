@@ -83,7 +83,6 @@ class Plugin
 
         //CSS
         wp_enqueue_style('admin-icon', plugin_dir_url(__FILE__) . '/assets/pictofont/style.css', false, '1.0.0');
-        wp_enqueue_style('admin-form', plugin_dir_url(__FILE__) . '/assets/css/admin-form.css', false, '1.0.0');
         wp_enqueue_style('admin-ovs', plugin_dir_url(__FILE__) . '/assets/css/admin.css', false, '1.0.0');
     }
 
