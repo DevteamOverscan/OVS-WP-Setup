@@ -13,9 +13,9 @@ add_action('wp_footer', 'gdpr_consent');
 function gdpr_consent()
 {
     ?>
-<script type="text/javascript" src="/<?= WP_CONTENT_FOLDERNAME  ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/setup/functions/tarteaucitron.js-1.15.0/tarteaucitron.min.js">
+<script src="/<?= WP_CONTENT_FOLDERNAME  ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/setup/functions/tarteaucitron.js-1.15.0/tarteaucitron.min.js">
 </script>
-<script type="text/javascript">
+<script>
     tarteaucitron.init({
         "privacyUrl": "/politique-de-confidentialite",
         /* URL de la politique de confidentialité */
