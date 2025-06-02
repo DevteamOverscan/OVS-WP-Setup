@@ -39,7 +39,7 @@ class SetUp
         // --  Désactive la possibilité d'imprimer une page  -- //
         // ---------------------------------------------------- //
         add_action('wp_head', function () {
-            echo '<style type="text/css"> @media print { body { display:none } } </style>';
+            echo '<style> @media print { body { display:none } } </style>';
         });
         // ----------------------------------------- //
         // -- Ajout possibilité de charger du svg -- //
