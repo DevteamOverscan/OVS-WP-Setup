@@ -12,7 +12,15 @@
 add_action('wp_footer', 'gdpr_consent');
 function gdpr_consent()
 {
+
+    global $tarteaucitron_has_services;
+    
+    // Si aucun service n’est défini, on ne charge pas Tarteaucitron
+    if (empty($tarteaucitron_has_services)) {
+        return;
+    }
     ?>
+
 <script src="/<?= WP_CONTENT_FOLDERNAME  ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/setup/functions/tarteaucitron.js-1.15.0/tarteaucitron.min.js">
 </script>
 <script>
