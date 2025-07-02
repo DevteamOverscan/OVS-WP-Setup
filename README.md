@@ -1,6 +1,6 @@
 # OVS-WP-Setup
 
-## À effetuer si vous n'utiliser pas le boiler de Overscan
+## À effetuer si vous n'utilisez pas le boiler de Overscan
 
 Dans le dossier "mu-plugins" créer un fichier _"ovs.php"_. Ajouter le code suivant à l'intérieur du fichier nouvellement créé.
 
