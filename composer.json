@@ -1,0 +1,11 @@
+{
+    "name": "ovs/wp-setup",
+    "type": "wordpress-muplugin",
+    "version": "1.0.0",
+    "description": "Plugin de sécurité et d’optimisation pour WordPress",
+    "autoload": {
+        "psr-4": {
+            "Ovs\\WpSetup\\": "src/"
+        }
+    }
+}
