@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: Ovs
- * Description: Plugin prsonnalisé d'Overscan pour Wordpress
+ * Plugin Name: OVS WP Setup
+ * Description: Plugin de sécurité et d’optimisation pour WordPress
  * Plugin URI:  https://www.overscan.com/
  * Version:     1
- * Author:      Clément Vacheron
+ * Author:      Overscan
  * Author URI:  https://www.overscan.com/
  * Text Domain: ovs
  * License: GPL v3 or later
