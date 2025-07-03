@@ -1,5 +1,5 @@
 {
-    "name": "ovs/wp-setup",
+    "name": "ovs/ovs-wp-setup",
     "type": "wordpress-muplugin",
     "version": "1.0.0",
     "description": "Plugin de sécurité et d’optimisation pour WordPress",

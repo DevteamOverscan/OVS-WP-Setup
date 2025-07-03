@@ -11,7 +11,7 @@ Dans le dossier "mu-plugins" créer un fichier _"ovs.php"_. Ajouter le code suiv
  * Description: Plugin personnalisé d'Overscan pour Wordpress
  * Plugin URI:  https://www.overscan.com/
  * Version:     1
- * Author:      Clément Vacheron
+ * Author:      Overscan
  * Author URI:  https://www.overscan.com/
  * Text Domain: ovs
  * License: GPL v3 or later
@@ -29,7 +29,7 @@ if (!defined('ABSPATH')) {
 }
 
 //Package d'installation
-require WPMU_PLUGIN_DIR . '/OVS-WP-Setup/ovs.php';
+require WPMU_PLUGIN_DIR . '/ovs-wp-setup/ovs.php';
 
 if(get_option('custom_plugins') !== false) {
     foreach (get_option('custom_plugins') as $plugin) {
