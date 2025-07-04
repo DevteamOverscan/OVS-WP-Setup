@@ -184,11 +184,15 @@ function redirect_user_enumeration_attempt()
 }
 add_action('parse_request', 'redirect_user_enumeration_attempt');
 
-// Désactiver les en-têtes d'erreur de l'API REST pour les requêtes utilisateur
 function disable_user_enumeration_rest_api($response, $handler, $request)
 {
+    // Ne bloque pas les utilisateurs connectés ayant des droits d'édition
+    if (is_user_logged_in() && current_user_can('edit_posts')) {
+        return $response;
+    }
+
     if (strpos($request->get_route(), '/wp/v2/users') !== false) {
-        $response = new WP_Error(
+        return new WP_Error(
             'rest_disabled',
             __('L\'énumération des utilisateurs est désactivée.'),
             array('status' => 403)
