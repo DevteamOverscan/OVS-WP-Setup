@@ -118,16 +118,17 @@ function custom_new_user_email($wp_new_user_notification_email, $user, $blogname
 
 
 // Supprimer le cookie ovs-key lors de la déconnexion
-function custom_woocommerce_logout()
+function custom_logout()
 {
     if (isset($_COOKIE['ovs-key'])) {
         setcookie('ovs-key', '', time() - 3600, '/', COOKIE_DOMAIN); // Détruire le cookie
+        unset($_COOKIE['ovs-key']);
     }
-    wp_logout(); // Déconnecter l'utilisateur
+    error_log("logout de security-wp");
     wp_redirect(home_url()); // Redirection vers la page d'accueil après déconnexion
     exit;
 }
-add_action('wp_logout', 'custom_woocommerce_logout');
+add_action('wp_logout', 'custom_logout');
 
 // Vérifier le nonce et gérer la redirection personnalisée
 function custom_logout_redirect()
