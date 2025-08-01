@@ -66,12 +66,12 @@ function custom_login_url($login_url, $redirect, $force_reauth)
 add_filter('lostpassword_url', 'my_lostpassword_url', 10, 0);
 function my_lostpassword_url()
 {
-    $auth = get_option('ovs_auth', false);
-
-    if (isset($_COOKIE['ovs-key']) && $_COOKIE['ovs-key'] !== $auth) {
+    if (isset($_COOKIE['ovs-key'])) {
         exit();
     } elseif (!isset($_COOKIE['ovs-key'])) {
-        setcookie("ovs-key", $auth, strtotime("+1 week"), '/');
+        $str = bin2hex(random_bytes(32));
+        $new_auth = hash("sha256", $str);
+        setcookie("ovs-key", $new_auth, strtotime("+1 week"), '/');
     }
 
     return home_url('/ovs-authentification.php?action=lostpassword');
