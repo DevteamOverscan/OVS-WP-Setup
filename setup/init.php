@@ -24,6 +24,8 @@ class SetUp
         if (!empty($wp_siteurl) && strpos($wp_siteurl, '/wp') !== false) {
             define('WP_STACK', 'bedrock');
             define('WP_CONTENT_FOLDERNAME', 'app');
+        }else{
+            define('WP_CONTENT_FOLDERNAME', 'wp-content');
         }
 
 
