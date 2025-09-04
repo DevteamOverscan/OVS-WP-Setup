@@ -19,6 +19,7 @@ function gdpr_consent()
     if (empty($tarteaucitron_has_services)) {
         return;
     }
+
     ?>
 
 <script src="/<?= WP_CONTENT_FOLDERNAME  ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/setup/functions/tarteaucitron.js-1.15.0/tarteaucitron.min.js">
@@ -45,6 +46,8 @@ function gdpr_consent()
 
         "showIcon": true,
         /* Afficher l'icône de cookie pour gérer les cookies */
+
+        "iconSrc": "/<?= WP_CONTENT_FOLDERNAME ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/assets/img/cookie.png",
 
         "iconPosition": "BottomLeft",
         /* Positon de l'icone BottomRight, BottomLeft, TopRight et TopLeft */
