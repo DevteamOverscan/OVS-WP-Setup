@@ -85,6 +85,21 @@ function secure_wp_login_access() {
 add_action('admin_init', 'secure_wp_admin_access');
 
 function secure_wp_admin_access() {
+        // Ne jamais bloquer admin-ajax.php
+    if (strpos($_SERVER['REQUEST_URI'], 'admin-ajax.php') !== false) {
+        return;
+    }
+    
+    // Ne jamais bloquer wp-cron.php
+    if (strpos($_SERVER['REQUEST_URI'], 'wp-cron.php') !== false) {
+        return;
+    }
+    
+    // Ne jamais bloquer l'API REST
+    if (strpos($_SERVER['REQUEST_URI'], 'wp-json') !== false) {
+        return;
+    }
+
     // Ne bloquer que si l'utilisateur n'est pas connecté
     // et n'a pas le cookie ovs-login-key (donc n'est pas passé par ovs-connect.php)
     if (!is_user_logged_in() && !isset($_COOKIE['ovs-login-key'])) {
@@ -149,7 +164,7 @@ function disable_user_enumeration_rest_api($response, $handler, $request)
             __('L\'énumération des utilisateurs est désactivée.'),
             array('status' => 403)
         );
-    }
+    }^
     return $response;
 }
 add_filter('rest_pre_dispatch', 'disable_user_enumeration_rest_api', 10, 3);
