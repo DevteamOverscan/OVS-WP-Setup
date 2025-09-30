@@ -98,7 +98,6 @@ class Plugin
     {
         $files = array(
             'ovs-connect.php',
-            'ovs-authentification.php',
         );
         foreach ($files as $f) {
             $destination = ABSPATH . $f;
