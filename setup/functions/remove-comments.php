@@ -2,7 +2,7 @@
 /**
  *
  * @package OVS
- * @author Clément Vacheron
+ * @author Overscan
  * @link https://www.overscan.com
  */
 

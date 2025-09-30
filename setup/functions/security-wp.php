@@ -2,7 +2,7 @@
 /**
  *
  * @package OVS
- * @author Clément Vacheron
+ * @author Overscan
  * @link https://www.overscan.com
  */
 
@@ -44,105 +44,54 @@ remove_action('wp_print_styles', 'print_emoji_styles');
 
 remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0); // Remove shortlink
 
-// --------------------------------------- //
-// --     Change l'access à l'admin     -- //
-// --------------------------------------- //
-//Modification de l'adresse de déconnexion
-add_filter('logout_url', 'custom_logout_url', 10, 2);
-function custom_logout_url($logout_url, $redirect)
-{
-    return wp_nonce_url(home_url('ovs-authentification.php?action=logout'), 'log-out');
-}
 
-//Modification de l'adresse de connexion
-add_filter('login_url', 'custom_login_url', 10, 3);
-function custom_login_url($login_url, $redirect, $force_reauth)
-{
-    $is_bedrock = defined('WP_STACK') && WP_STACK === 'bedrock';
-    return str_replace($is_bedrock ? 'wp/wp-login' : 'wp-login', 'ovs-authentification', $login_url);
-}
+// ==============================================
+// -- Sécurisation de l'accès à wp-login.php --
+// ==============================================
 
-//Modification du lien du reset password
-add_filter('lostpassword_url', 'my_lostpassword_url', 10, 0);
-function my_lostpassword_url()
-{
-    if (isset($_COOKIE['ovs-key'])) {
-        exit();
-    } elseif (!isset($_COOKIE['ovs-key'])) {
-        $str = bin2hex(random_bytes(32));
-        $new_auth = hash("sha256", $str);
-        setcookie("ovs-key", $new_auth, strtotime("+1 week"), '/');
-    }
+add_action('login_init', 'secure_wp_login_access');
 
-    return home_url('/ovs-authentification.php?action=lostpassword');
-}
-
-//Modification du lien du reset password dans le mail envoyé à l'utilisateur
-add_filter("retrieve_password_message", "mapp_custom_password_reset", 99, 4);
-function mapp_custom_password_reset($message, $key, $user_login, $user_data)
-{
-    /* translators: %s: User login. */
-    $message  = sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";
-    $message .= __('To set your password, visit the following address:') . "\r\n\r\n";
-    $message .= home_url("ovs-authentification.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login') . "\r\n\r\n";
-
-    $message .= wp_login_url() . "\r\n";
-
-    return $message;
-}
-
-
-// Modification du lien pour définir un nouveau mot de passe, dans le mail envoyé à la suite de l'inscription d'un nouveau user
-add_filter('wp_new_user_notification_email', 'custom_new_user_email', 10, 3);
-
-function custom_new_user_email($wp_new_user_notification_email, $user, $blogname) {
-    $reset_key = get_password_reset_key($user);
-    
-    if (is_wp_error($reset_key)) {
-        return $wp_new_user_notification_email;
-    }
-
-    $reset_link = home_url("ovs-authentification.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
-
-    $wp_new_user_notification_email['subject'] = sprintf(__('Bienvenue sur %s – Définissez votre mot de passe'), $blogname);
-    $wp_new_user_notification_email['message'] = sprintf(
-        __("Bonjour %s,\n\nUn compte a été créé pour vous sur %s.\n\nPour définir votre mot de passe, cliquez sur le lien suivant :\n\n%s\n\nSi vous n'avez pas demandé cela, ignorez cet email.\n\nCordialement,\nL'équipe de %s"),
-        $user->user_login,
-        $blogname,
-        $reset_link,
-        $blogname
+function secure_wp_login_access() {
+    // Whitelist des actions autorisées sans passage par ovs-connect.php
+    $allowed_actions = array(
+        'rp',           // Reset password (lien email)
+        'resetpass',    // Formulaire de reset
+        'lostpassword', // Mot de passe perdu
+        'postpass'      // Password pour post privé
     );
-
-    return $wp_new_user_notification_email;
-}
-
-
-// Supprimer le cookie ovs-key lors de la déconnexion
-function custom_logout()
-{
-    if (isset($_COOKIE['ovs-key'])) {
-        setcookie('ovs-key', '', time() - 3600, '/', COOKIE_DOMAIN); // Détruire le cookie
-        unset($_COOKIE['ovs-key']);
+    
+    $current_action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
+    
+    // Cas autorisés :
+    if (in_array($current_action, $allowed_actions) 
+        || isset($_COOKIE['ovs-login-key']) 
+        || is_user_logged_in()) {
+        return;
     }
-    error_log("logout de security-wp");
-    wp_redirect(home_url()); // Redirection vers la page d'accueil après déconnexion
-    exit;
-}
-add_action('wp_logout', 'custom_logout');
-
-// Vérifier le nonce et gérer la redirection personnalisée
-function custom_logout_redirect()
-{
-    if (!is_user_logged_in() && isset($_GET['action']) && $_GET['action'] == 'logout') {
-        if (wp_verify_nonce($_GET['_wpnonce'], 'log-out')) {
-            wp_redirect(home_url()); // Redirection vers la page d'accueil
-        } else {
-            wp_redirect(home_url('/access-denied')); // Redirection en cas de nonce invalide
-        }
+    
+    // Cas bloqués :
+    // Tentative d'accès direct à la page de login
+    if ($current_action === 'login' || empty($current_action)) {
+        error_log('Tentative d acces direct a wp-login.php depuis IP: ' . $_SERVER['REMOTE_ADDR']);
+        wp_redirect(home_url('/404'));
         exit;
     }
 }
-add_action('template_redirect', 'custom_logout_redirect');
+
+// ==============================================
+// -- Sécurisation de l'accès à wp-admin --
+// ==============================================
+
+add_action('admin_init', 'secure_wp_admin_access');
+
+function secure_wp_admin_access() {
+    // Ne bloquer que si l'utilisateur n'est pas connecté
+    // et n'a pas le cookie ovs-login-key (donc n'est pas passé par ovs-connect.php)
+    if (!is_user_logged_in() && !isset($_COOKIE['ovs-login-key'])) {
+        wp_redirect(home_url('/404'));
+        exit;
+    }
+}
 
 // Rendu de la page forbidden
 function custom_error_pages()
@@ -164,6 +113,8 @@ function custom_error_pages()
     }
 }
 add_action('wp', 'custom_error_pages');
+
+// ------ //
 
 // ------------------------------------------------ //
 // --     Désactive l'énumération des comptes    -- //
