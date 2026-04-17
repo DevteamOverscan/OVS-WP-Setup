@@ -129,6 +129,14 @@ function custom_error_pages()
 }
 add_action('wp', 'custom_error_pages');
 
+// --------------------------------------------------------------------------------//
+// --     Remplace les messages d'erreur de login par un message générique. -- //
+// --------------------------------------------------------------------------------//
+
+add_filter( 'login_errors', function(){
+    return __('Une erreur s\'est produite avec les identifiants fournis. Veuillez réessayer.', 'ovs');
+});
+
 // ------ //
 
 // ------------------------------------------------ //
