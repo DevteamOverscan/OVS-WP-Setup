@@ -25,7 +25,7 @@ Dans le dossier "mu-plugins" créer un fichier _"ovs.php"_. Ajouter le code suiv
  * @link https://www.overscan.com
  */
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit; // Sortie si accès direct
 }
 
 //Package d'installation

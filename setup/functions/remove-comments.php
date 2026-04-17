@@ -1,5 +1,6 @@
 <?php
 /**
+ * Désactive l'ensemble des fonctionnalités liées aux commentaires.
  *
  * @package OVS
  * @author Overscan
@@ -7,11 +8,11 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
 add_action('admin_init', function () {
-    // Redirect any user trying to access comments page
+    // Rediriger toute tentative d'accès à l'écran des commentaires.
     global $pagenow;
 
     if ($pagenow === 'edit-comments.php') {
@@ -19,10 +20,10 @@ add_action('admin_init', function () {
         exit;
     }
 
-    // Remove comments metabox from dashboard
+    // Supprimer le bloc des commentaires récents du tableau de bord.
     remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
 
-    // Disable support for comments and trackbacks in post types
+    // Retirer les commentaires et trackbacks de tous les types de contenus compatibles.
     foreach (get_post_types() as $post_type) {
         if (post_type_supports($post_type, 'comments')) {
             remove_post_type_support($post_type, 'comments');
@@ -31,19 +32,19 @@ add_action('admin_init', function () {
     }
 });
 
-// Close comments on the front-end
+// Fermer les commentaires et pingbacks côté front-office.
 add_filter('comments_open', '__return_false', 20, 2);
 add_filter('pings_open', '__return_false', 20, 2);
 
-// Hide existing comments
+// Masquer les commentaires existants dans le front-office.
 add_filter('comments_array', '__return_empty_array', 10, 2);
 
-// Remove comments page in menu
+// Retirer l'entrée Commentaires du menu d'administration.
 add_action('admin_menu', function () {
     remove_menu_page('edit-comments.php');
 });
 
-// Remove comments links from admin bar
+// Retirer l'accès aux commentaires depuis la barre d'administration.
 add_action('init', function () {
     if (is_admin_bar_showing()) {
         remove_action('admin_bar_menu', 'wp_admin_bar_comments_menu', 60);

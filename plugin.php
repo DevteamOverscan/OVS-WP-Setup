@@ -1,40 +1,38 @@
 <?php
 
 /**
- * Class Plugin
+ * Classe principale du plugin.
+ *
  * @package OVS
- * @author Clément Vacheron
+ * @author Overscan
  * @link https://www.overscan.com
- * Main Plugin class
  * @since 1
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
 class Plugin
 {
     /**
-     * Instance
+     * Instance unique du plugin.
      *
      * @since 1
      * @access private
      * @static
      *
-     * @var Plugin The single instance of the class.
+     * @var Plugin
      */
     private static $_instance = null;
 
     /**
-     * Instance
-     *
-     * Ensures only one instance of the class is loaded or can be loaded.
+     * Retourne l'instance unique du plugin.
      *
      * @since 1
      * @access public
      *
-     * @return Plugin An instance of the class.
+     * @return Plugin
      */
     public static function instance()
     {
@@ -46,9 +44,7 @@ class Plugin
 
 
     /**
-     *  Plugin class constructor
-     *
-     * Register plugin action hooks and filters
+     * Initialise le plugin et ses hooks principaux.
      *
      * @since 1.2.0
      * @access public
@@ -64,28 +60,32 @@ class Plugin
         $setup->init();
         if (!get_option('ovs_activated', false)) {
             register_activation_hook(__FILE__, array($this, 'plugin_activation'));
-            // $this->plugin_activation();
             update_option('ovs_activated', true);
         }
 
     }
 
+    /**
+     * Charge les scripts et styles utilisés dans l'administration.
+     */
     public function admin_include_script()
     {
         if (!did_action('wp_enqueue_media')) {
             wp_enqueue_media();
         }
-        // Enqueue scripts and styles
-        // JS
 
+        // Charger les scripts JavaScript de l'administration.
         wp_enqueue_script('admin-ovs', plugin_dir_url(__FILE__) . '/assets/js/admin.js', null, false, true);
         wp_enqueue_script('alert-ovs', plugin_dir_url(__FILE__) . '/assets/js/alert.js', null, false, true);
 
-        //CSS
+        // Charger les feuilles de style de l'administration.
         wp_enqueue_style('admin-icon', plugin_dir_url(__FILE__) . '/assets/pictofont/style.css', false, '1.0.0');
         wp_enqueue_style('admin-ovs', plugin_dir_url(__FILE__) . '/assets/css/admin.css', false, '1.0.0');
     }
 
+    /**
+     * Exécute les actions prévues à l'activation du plugin.
+     */
     public function plugin_activation()
     {
         $setup = new SetUp();
@@ -94,6 +94,9 @@ class Plugin
 
     }
 
+    /**
+     * Supprime les fichiers déposés à la racine lors de la désactivation du plugin.
+     */
     public function plugin_deactivation()
     {
         $files = array(
@@ -107,6 +110,9 @@ class Plugin
         }
     }
 
+    /**
+     * Charge les fichiers d'initialisation du plugin.
+     */
     private function load_files()
     {
         $roots_includes = array(
@@ -120,17 +126,14 @@ class Plugin
                 if (file_exists($filepath)) {
                     require_once $filepath;
                 } else {
-                    // Log a warning instead of triggering an error
-                    error_log("Warning: File `$filepath` not found for inclusion!");
+                    error_log("Avertissement: Fichier `$filepath` introuvable pour inclusion!");
                 }
             }
         } else {
-            // Optionally log a message if the plugin path is not a directory
             error_log("Warning: Directory `$pluginPath` does not exist!");
         }
     }
 
 }
 
-// Instantiate Plugin Class
 Plugin::instance();

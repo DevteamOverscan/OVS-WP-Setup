@@ -1,5 +1,6 @@
 <?php
 /**
+ * Renforce la sécurité générale d'une installation WordPress.
  *
  * @package OVS
  * @author Overscan
@@ -7,110 +8,108 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
-// ----------------------------------------- //
-// --         Remove version WP           -- //
-// ----------------------------------------- //
+// ==============================================
+// Nettoyage de WordPress
+// ==============================================
+
+// Retirer la version de WordPress du code source généré.
 remove_action('wp_head', 'wp_generator');
 
-// ----------------------------------------- //
-// --    Security - Disable XML-RCP       -- //
+// Désactiver le protocole XML-RPC.
 add_filter('xmlrpc_enabled', '__return_false');
-// ----------------------------------------- //
-// add_filter('rest_jsonp_enabled', '__return_false');
 
-// ------------------------------------------------- //
-// --  Security - Disable ALL infos Wordpress     -- //
-// ------------------------------------------------- //
-
-remove_action('wp_head', 'rsd_link'); // remove really simple discovery link
-remove_action('wp_head', 'wp_generator'); // remove wordpress version
-
-remove_action('wp_head', 'feed_links', 2); // remove rss feed links (make sure you add them in yourself if youre using feedblitz or an rss service)
-remove_action('wp_head', 'feed_links_extra', 3); // removes all extra rss feed links
-
-remove_action('wp_head', 'index_rel_link'); // remove link to index page
-remove_action('wp_head', 'wlwmanifest_link'); // remove wlwmanifest.xml (needed to support windows live writer)
-
-remove_action('wp_head', 'start_post_rel_link', 10, 0); // remove random post link
-remove_action('wp_head', 'parent_post_rel_link', 10, 0); // remove parent post link
-remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0); // remove the next and previous post links
+// Retirer les métadonnées WordPress inutiles du <head>.
+remove_action('wp_head', 'rsd_link');
+remove_action('wp_head', 'feed_links', 2);
+remove_action('wp_head', 'feed_links_extra', 3);
+remove_action('wp_head', 'index_rel_link');
+remove_action('wp_head', 'wlwmanifest_link');
+remove_action('wp_head', 'start_post_rel_link', 10, 0);
+remove_action('wp_head', 'parent_post_rel_link', 10, 0);
+remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
 remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
-
+remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
 
-remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0); // Remove shortlink
-
-
 // ==============================================
-// -- Sécurisation de l'accès à wp-login.php --
+// Sécurisation de la connexion
 // ==============================================
 
 add_action('login_init', 'secure_wp_login_access');
 
+/**
+ * Bloque l'accès direct à wp-login.php hors cas autorisés.
+ */
 function secure_wp_login_access() {
-    // Whitelist des actions autorisées sans passage par ovs-connect.php
+    // Autoriser certaines actions sans authentification préalable.
     $allowed_actions = array(
-        'rp',           // Reset password (lien email)
-        'resetpass',    // Formulaire de reset
-        'lostpassword', // Mot de passe perdu
-        'postpass'      // Password pour post privé
+        'rp',           // Réinitialisation du mot de passe.
+        'resetpass',    // Formulaire de réinitialisation du mot de passe.
+        'lostpassword', // Demande de mot de passe perdu.
+        'postpass'      // Accès à un contenu protégé par mot de passe.
     );
-    
+
     $current_action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
-    
-    // Cas autorisés :
-    if (in_array($current_action, $allowed_actions) 
-        || isset($_COOKIE['ovs-login-key']) 
+
+    // Laisser passer les actions autorisées, les utilisateurs connectés et les visiteurs disposant du cookie.
+    if (in_array($current_action, $allowed_actions)
+        || isset($_COOKIE['ovs-login-key'])
         || is_user_logged_in()) {
         return;
     }
-    
-    // Cas bloqués :
-    // Tentative d'accès direct à la page de login
+
+    // Bloquer les accès directs non autorisés à la page de connexion.
     if ($current_action === 'login' || empty($current_action)) {
-        error_log('Tentative d acces direct a wp-login.php depuis IP: ' . $_SERVER['REMOTE_ADDR']);
+        error_log('Tentative accès direct wp-login.php : ' . $_SERVER['REMOTE_ADDR']);
         wp_redirect(home_url('/404'));
         exit;
     }
 }
 
 // ==============================================
-// -- Sécurisation de l'accès à wp-admin --
+// Sécurisation de l'accèes au Back Office
 // ==============================================
 
 add_action('admin_init', 'secure_wp_admin_access');
 
+/**
+ * Restreint l'accès à wp-admin aux utilisateurs autorisés.
+ */
 function secure_wp_admin_access() {
-        // Ne jamais bloquer admin-ajax.php
+    // Autoriser les requêtes AJAX WordPress (admin-ajax.php).
     if (strpos($_SERVER['REQUEST_URI'], 'admin-ajax.php') !== false) {
         return;
     }
-    
-    // Ne jamais bloquer wp-cron.php
+
+    // Autoriser l'exécution du cron WordPress (wp-cron.php).
     if (strpos($_SERVER['REQUEST_URI'], 'wp-cron.php') !== false) {
         return;
     }
-    
-    // Ne jamais bloquer l'API REST
+
+    // Autoriser les appels à l'API REST.
     if (strpos($_SERVER['REQUEST_URI'], 'wp-json') !== false) {
         return;
     }
 
-    // Ne bloquer que si l'utilisateur n'est pas connecté
-    // et n'a pas le cookie ovs-login-key (donc n'est pas passé par ovs-connect.php)
+    // Bloquer l'accès à l'administration sans session valide ni cookie attendu.
     if (!is_user_logged_in() && !isset($_COOKIE['ovs-login-key'])) {
         wp_redirect(home_url('/404'));
         exit;
     }
 }
 
-// Rendu de la page forbidden
-function custom_error_pages()
-{
+// ==============================================
+// Gestion des erreurs
+// ==============================================
+
+/**
+ * Affiche une page dédiée pour les erreurs 403.
+ */
+function custom_error_pages() {
     global $wp_query;
 
     if (isset($_REQUEST['status']) && $_REQUEST['status'] == 403) {
@@ -129,47 +128,48 @@ function custom_error_pages()
 }
 add_action('wp', 'custom_error_pages');
 
-// --------------------------------------------------------------------------------//
-// --     Remplace les messages d'erreur de login par un message générique. -- //
-// --------------------------------------------------------------------------------//
-
-add_filter( 'login_errors', function(){
+/**
+ * Retourne un message générique lors d'un échec de connexion.
+ */
+add_filter('login_errors', function() {
     return __('Une erreur s\'est produite avec les identifiants fournis. Veuillez réessayer.', 'ovs');
 });
 
-// ------ //
+// ==============================================
+// Désactivation de l'énumération des utilisateurs
+// ==============================================
 
-// ------------------------------------------------ //
-// --     Désactive l'énumération des comptes    -- //
-// ------------------------------------------------ //
-
-// Rediriger les requêtes d'énumération des utilisateurs vers la page d'accueil
-function redirect_user_enumeration_attempt()
-{
-
+/**
+ * Redirige les tentatives d'énumération des utilisateurs via les pages auteur.
+ */
+function redirect_user_enumeration_attempt() {
+    // Ne pas appliquer cette redirection dans l'administration.
     if (is_user_admin()) {
-        return; // Ne pas rediriger les utilisateurs administrateurs
+        return;
     }
 
+    // Rediriger les pages auteur et les accès utilisant le paramètre author.
     if (is_author() || isset($_GET['author'])) {
         wp_redirect(home_url(), 301);
         exit;
     }
-
 }
 add_action('parse_request', 'redirect_user_enumeration_attempt');
 
-function disable_user_enumeration_rest_api($response, $handler, $request)
-{
-    // Ne bloque pas les utilisateurs connectés ayant des droits d'édition
+/**
+ * Bloque l'énumération des utilisateurs via l'API REST.
+ */
+function disable_user_enumeration_rest_api($response, $handler, $request) {
+    // Autoriser les utilisateurs connectés disposant des droits d'édition.
     if (is_user_logged_in() && current_user_can('edit_posts')) {
         return $response;
     }
 
+    // Refuser l'accès aux routes exposant la liste des utilisateurs.
     if (strpos($request->get_route(), '/wp/v2/users') !== false) {
         return new WP_Error(
             'rest_disabled',
-            __('L\'énumération des utilisateurs est désactivée.'),
+            __('L\'énumération des utilisateurs est désactivée.', 'ovs'),
             array('status' => 403)
         );
     }
@@ -177,17 +177,22 @@ function disable_user_enumeration_rest_api($response, $handler, $request)
 }
 add_filter('rest_pre_dispatch', 'disable_user_enumeration_rest_api', 10, 3);
 
+// ==============================================
+// Sécurité complémentaire
+// ==============================================
 
-//  Disable pingback.ping xmlrpc method to prevent WordPress from participating in DDoS attacks
-
-// remove x-pingback HTTP header
+/**
+ * Supprime l'en-tête Pingback de la réponse HTTP.
+ */
 add_filter('wp_headers', function($headers) {
     unset($headers['X-Pingback']);
     return $headers;
 });
-// disable pingbacks
-add_filter( 'xmlrpc_methods', function( $methods ) {
-        unset( $methods['pingback.ping'] );
-        return $methods;
+
+add_filter('xmlrpc_methods', function($methods) {
+    unset($methods['pingback.ping']);
+    return $methods;
 });
-add_filter( 'auto_update_translation', '__return_false' );
+
+// Désactiver les mises à jour automatiques des fichiers de traduction.
+add_filter('auto_update_translation', '__return_false');

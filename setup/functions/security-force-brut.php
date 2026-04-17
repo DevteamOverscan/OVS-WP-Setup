@@ -1,5 +1,6 @@
 <?php
 /**
+ * Limite les tentatives de connexion répétées à l'administration.
  *
  * @package OVS
  * @author Overscan
@@ -7,12 +8,12 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
-// ------------------------------------------------------------------ //
-// --     Limite le nombre de tentative de connexion à l'admin     -- //
-// ------------------------------------------------------------------ //
+/**
+ * Bloque temporairement l'authentification après plusieurs échecs.
+ */
 function check_attempted_login($user, $username, $password)
 {
     if (get_transient('attempted_login')) {
@@ -22,13 +23,17 @@ function check_attempted_login($user, $username, $password)
             $until = get_option('_transient_timeout_' . 'attempted_login');
             $time = time_to_go($until);
 
-            return new WP_Error('too_many_tried', sprintf(__('<strong>ERROR</strong>: You have reached authentication limit, you will be able to try again in %1$s.'), $time));
+            return new WP_Error('too_many_tried', sprintf(__('<strong>ERREUR</strong>: Limite d\'authentification atteinte, réessayez dans %1$s.'), $time));
         }
     }
 
     return $user;
 }
 add_filter('authenticate', 'check_attempted_login', 30, 3);
+
+/**
+ * Incrémente le compteur après un échec de connexion.
+ */
 function login_failed($username)
 {
     if (get_transient('attempted_login')) {
@@ -40,25 +45,27 @@ function login_failed($username)
         }
     } else {
         $datas = array(
-            'tried'     => 1
+            'tried' => 1
         );
         set_transient('attempted_login', $datas, 300);
     }
 }
 add_action('wp_login_failed', 'login_failed', 10, 1);
 
+/**
+ * Convertit une échéance en durée lisible.
+ */
 function time_to_go($timestamp)
 {
-
-    // converting the mysql timestamp to php time
+    // Convertir le délai restant en unité compréhensible pour l'utilisateur.
     $periods = array(
-        "second",
+        "seconde",
         "minute",
-        "hour",
-        "day",
-        "week",
-        "month",
-        "year"
+        "heure",
+        "jour",
+        "semaine",
+        "mois",
+        "année"
     );
     $lengths = array(
         "60",

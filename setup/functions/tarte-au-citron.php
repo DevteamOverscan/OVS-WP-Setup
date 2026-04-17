@@ -1,21 +1,28 @@
 <?php
 /**
+ * Intègre TarteAuCitron pour la gestion du consentement aux cookies.
  *
  * @package OVS
  * @author Overscan
  * @link https://www.overscan.com
  */
 
-// Ajout du système de Cookie Tarteaucitron v1.8.3 (https://tarteaucitron.io/fr/) //
-// Ajout des code du système de cookie dans l'entête du site //
+if (!defined('ABSPATH')) {
+    exit; /* Sortie si accès direct. */
+}
 
+// Injecter le script de consentement aux cookies dans le pied de page.
 add_action('wp_footer', 'gdpr_consent');
+
+/**
+ * Affiche la configuration TarteAuCitron si des services sont déclarés.
+ */
 function gdpr_consent()
 {
 
     global $tarteaucitron_has_services;
-    
-    // Si aucun service n’est défini, on ne charge pas Tarteaucitron
+
+    // Ne pas charger TarteAuCitron si aucun service n'est configuré.
     if (empty($tarteaucitron_has_services)) {
         return;
     }
@@ -27,66 +34,66 @@ function gdpr_consent()
 <script>
     tarteaucitron.init({
         "privacyUrl": "/politique-de-confidentialite",
-        /* URL de la politique de confidentialité */
+        /* URL de la politique de confidentialité. */
 
         "hashtag": "#tarteaucitron",
-        /* Ouvrez le panneau avec ce hashtag */
+        /* Ouvrir le panneau de gestion avec ce hashtag. */
 
         "cookieName": "tarteaucitron",
-        /* Nom du cookie */
+        /* Nom du cookie de consentement. */
 
         "orientation": "bottom",
-        /* Position de la bannière (top - middle - bottom) */
+        /* Position de la bannière : top, middle ou bottom. */
 
         "showAlertSmall": false,
-        /* Afficher la petite bannière en bas à droite */
+        /* Afficher la bannière réduite en bas de l'écran. */
 
         "cookieslist": false,
-        /* Afficher la liste des cookies */
+        /* Afficher la liste détaillée des cookies. */
 
         "showIcon": true,
-        /* Afficher l'icône de cookie pour gérer les cookies */
+        /* Afficher l'icône permettant de rouvrir le panneau cookies. */
 
         "iconSrc": "/<?= WP_CONTENT_FOLDERNAME ?>/mu-plugins/<?= OVS_SETUP_PATH ?>/assets/img/cookie.png",
 
         "iconPosition": "BottomLeft",
-        /* Positon de l'icone BottomRight, BottomLeft, TopRight et TopLeft */
+        /* Position de l'icône : BottomRight, BottomLeft, TopRight ou TopLeft. */
 
         "adblocker": false,
-        /* Afficher un avertissement si un bloqueur de publicités est détecté */
+        /* Afficher un avertissement si un bloqueur de publicité est détecté. */
 
         "DenyAllCta": true,
-        /* Afficher le bouton Refuser tout */
+        /* Afficher le bouton de refus global. */
 
         "AcceptAllCta": true,
-        /* Afficher le bouton Accepter tout lorsque la valeur est élevée */
+        /* Afficher le bouton d'acceptation globale. */
 
         "highPrivacy": true,
-        /* FORTEMENT RECOMMANDÉ Désactiver le consentement automatique */
+        /* Désactiver le consentement automatique. */
 
         "handleBrowserDNTRequest": false,
-        /* If Do Not Track == 1, disallow all */
+        /* Refuser automatiquement les services si le navigateur envoie Do Not Track. */
 
         "removeCredit": false,
-        /* Supprimer le lien de crédit */
+        /* Conserver le lien de crédit TarteAuCitron. */
 
         "moreInfoLink": true,
-        /* Afficher plus de lien d'informations */
+        /* Afficher un lien d'information complémentaire. */
 
         "useExternalCss": false,
-        /* Utilisation d'un css externe/custom. Si faux, le fichier tarteaucitron.css sera chargé */
+        /* Charger une feuille de style externe personnalisée à la place du CSS natif. */
 
         "useExternalJs": false,
-        /* Utilisation d'un js externe/custom. Si faux, le fichier tarteaucitron.js sera chargé */
+        /* Charger un script externe personnalisé à la place du JS natif. */
 
         // "cookieDomain": ".my-multisite-domaine.fr",
-        /* Cookie partagé pour le multisite */
+        /* Partager le cookie de consentement sur un multisite. */
 
         "readmoreLink": "",
-        /* Changer le lien readmore par défaut */
+        /* Remplacer le lien « read more » par défaut. */
 
         "mandatory": true,
-        /* Afficher un message sur les cookies obligatoires */
+        /* Afficher un message concernant les cookies obligatoires. */
     })
 </script>
 <?php };

@@ -1,5 +1,6 @@
 <?php
 /**
+ * Configure l'envoi des e-mails WordPress via SMTP.
  *
  * @package OVS
  * @author Overscan
@@ -7,15 +8,15 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
-
-
-// Fonction pour configurer l'envoi d'e-mails via SMTP
+/**
+ * Applique la configuration SMTP au client mail WordPress.
+ */
 function wp_mail_smtp($phpmailer)
 {
-    $phpmailer->isSMTP(); // Utiliser SMTP
+    $phpmailer->isSMTP(); // Utiliser le protocole SMTP.
     $phpmailer->Host       = SMTP_HOST;
     $phpmailer->SMTPAuth   = true;
     $phpmailer->Port       = SMTP_PORT;
@@ -31,6 +32,6 @@ if (
     defined('SMTP_PASSWORD') && !empty(SMTP_PASSWORD) &&
     defined('SMTP_SECURE') && !empty(SMTP_SECURE)
 ) {
-    // Si toutes les constantes sont définies et non vides, configurer l'envoi d'e-mails via SMTP
+    // Activer SMTP uniquement si toutes les constantes requises sont définies.
     add_action('phpmailer_init', 'wp_mail_smtp');
 }
