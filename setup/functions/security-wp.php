@@ -45,29 +45,28 @@ add_action('login_init', 'secure_wp_login_access');
  * Bloque l'accès direct à wp-login.php hors cas autorisés.
  */
 function secure_wp_login_access() {
-    // Autoriser certaines actions sans authentification préalable.
+
     $allowed_actions = array(
-        'rp',           // Réinitialisation du mot de passe.
-        'resetpass',    // Formulaire de réinitialisation du mot de passe.
-        'lostpassword', // Demande de mot de passe perdu.
-        'postpass'      // Accès à un contenu protégé par mot de passe.
+        'rp',
+        'resetpass',
+        'lostpassword',
+        'postpass'
     );
 
-    $current_action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
+    $current_action = $_REQUEST['action'] ?? 'login';
 
-    // Laisser passer les actions autorisées, les utilisateurs connectés et les visiteurs disposant du cookie.
-    if (in_array($current_action, $allowed_actions)
-        || isset($_COOKIE['ovs-login-key'])
-        || is_user_logged_in()) {
+    if (in_array($current_action, $allowed_actions, true)) {
         return;
     }
 
-    // Bloquer les accès directs non autorisés à la page de connexion.
-    if ($current_action === 'login' || empty($current_action)) {
-        error_log('Tentative accès direct wp-login.php : ' . $_SERVER['REMOTE_ADDR']);
-        wp_redirect(home_url('/404'));
-        exit;
+    $token = $_COOKIE['ovs-login-token'] ?? '';
+
+    if ($token && get_transient('ovs_login_token_' . $token)) {
+        return;
     }
+
+    wp_redirect(home_url('/404'));
+    exit;
 }
 
 // ==============================================
