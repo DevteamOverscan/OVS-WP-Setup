@@ -55,6 +55,7 @@ function secure_wp_login_access() {
 
     $current_action = $_REQUEST['action'] ?? 'login';
 
+    // Autoriser actions WordPress standard
     if (in_array($current_action, $allowed_actions, true)) {
         return;
     }
@@ -65,41 +66,16 @@ function secure_wp_login_access() {
         return;
     }
 
-    wp_redirect(home_url('/404'));
+    global $wp_query;
+
+    $wp_query->set_404();
+    status_header(404);
+    nocache_headers();
+
+    include get_query_template('404');
     exit;
 }
 
-// ==============================================
-// Sécurisation de l'accèes au Back Office
-// ==============================================
-
-add_action('admin_init', 'secure_wp_admin_access');
-
-/**
- * Restreint l'accès à wp-admin aux utilisateurs autorisés.
- */
-function secure_wp_admin_access() {
-    // Autoriser les requêtes AJAX WordPress (admin-ajax.php).
-    if (strpos($_SERVER['REQUEST_URI'], 'admin-ajax.php') !== false) {
-        return;
-    }
-
-    // Autoriser l'exécution du cron WordPress (wp-cron.php).
-    if (strpos($_SERVER['REQUEST_URI'], 'wp-cron.php') !== false) {
-        return;
-    }
-
-    // Autoriser les appels à l'API REST.
-    if (strpos($_SERVER['REQUEST_URI'], 'wp-json') !== false) {
-        return;
-    }
-
-    // Bloquer l'accès à l'administration sans session valide ni cookie attendu.
-    if (!is_user_logged_in() && !isset($_COOKIE['ovs-login-key'])) {
-        wp_redirect(home_url('/404'));
-        exit;
-    }
-}
 
 // ==============================================
 // Gestion des erreurs
