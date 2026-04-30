@@ -106,28 +106,6 @@ function secure_wp_admin_access() {
 // ==============================================
 
 /**
- * Affiche une page dédiée pour les erreurs 403.
- */
-function custom_error_pages() {
-    global $wp_query;
-
-    if (isset($_REQUEST['status']) && $_REQUEST['status'] == 403) {
-        $wp_query->is_404 = false;
-        $wp_query->is_page = true;
-        $wp_query->is_singular = true;
-        $wp_query->is_single = false;
-        $wp_query->is_home = false;
-        $wp_query->is_archive = false;
-        $wp_query->is_category = false;
-        status_header(403);
-        unset($_COOKIE['wp-connex']);
-        get_template_part('403');
-        exit;
-    }
-}
-add_action('wp', 'custom_error_pages');
-
-/**
  * Retourne un message générique lors d'un échec de connexion.
  */
 add_filter('login_errors', function() {
