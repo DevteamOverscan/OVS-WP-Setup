@@ -96,12 +96,10 @@ add_filter('login_errors', function() {
  * Redirige les tentatives d'énumération des utilisateurs via les pages auteur.
  */
 function redirect_user_enumeration_attempt() {
-    // Ne pas appliquer cette redirection dans l'administration.
     if (is_user_admin()) {
         return;
     }
 
-    // Rediriger les pages auteur et les accès utilisant le paramètre author.
     if (is_author() || isset($_GET['author'])) {
         wp_redirect(home_url(), 301);
         exit;
@@ -113,12 +111,10 @@ add_action('parse_request', 'redirect_user_enumeration_attempt');
  * Bloque l'énumération des utilisateurs via l'API REST.
  */
 function disable_user_enumeration_rest_api($response, $handler, $request) {
-    // Autoriser les utilisateurs connectés disposant des droits d'édition.
     if (is_user_logged_in() && current_user_can('edit_posts')) {
         return $response;
     }
 
-    // Refuser l'accès aux routes exposant la liste des utilisateurs.
     if (strpos($request->get_route(), '/wp/v2/users') !== false) {
         return new WP_Error(
             'rest_disabled',
@@ -129,6 +125,28 @@ function disable_user_enumeration_rest_api($response, $handler, $request) {
     return $response;
 }
 add_filter('rest_pre_dispatch', 'disable_user_enumeration_rest_api', 10, 3);
+
+
+/**
+ * Supprimer les auteurs dans les feeds
+ */
+
+add_action('do_feed_rss2_comments', '__return_false', 1);
+add_action('do_feed_atom_comments', '__return_false', 1);
+
+
+add_filter('the_author', function () {
+    return '';
+});
+
+add_filter('the_author_display_name', function () {
+    return '';
+});
+
+add_filter('get_the_author_display_name', function ($name) {
+    return '';
+});
+
 
 // ==============================================
 // Sécurité complémentaire
