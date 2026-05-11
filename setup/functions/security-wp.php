@@ -77,6 +77,34 @@ function secure_wp_login_access() {
 }
 
 // ==============================================
+// Gestion des erreurs
+// ==============================================
+
+/**
+ * Retourne un message générique lors d'un échec de connexion.
+ */
+
+add_filter('login_errors', function($error) {
+    $error_codes = [
+        'invalid_username',
+        'invalid_email', 
+        'incorrect_password',
+        'invalidcombo',
+    ];
+
+    global $errors;
+    if (is_wp_error($errors)) {
+        foreach ($error_codes as $code) {
+            if ($errors->get_error_message($code)) {
+                return __('Une erreur s\'est produite avec les identifiants fournis. Veuillez réessayer.', 'ovs');
+            }
+        }
+    }
+
+    return $error;
+});
+
+// ==============================================
 // Désactivation de l'énumération des utilisateurs
 // ==============================================
 
