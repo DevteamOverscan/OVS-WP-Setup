@@ -76,18 +76,6 @@ function secure_wp_login_access() {
     exit;
 }
 
-
-// ==============================================
-// Gestion des erreurs
-// ==============================================
-
-/**
- * Retourne un message générique lors d'un échec de connexion.
- */
-add_filter('login_errors', function() {
-    return __('Une erreur s\'est produite avec les identifiants fournis. Veuillez réessayer.', 'ovs');
-});
-
 // ==============================================
 // Désactivation de l'énumération des utilisateurs
 // ==============================================

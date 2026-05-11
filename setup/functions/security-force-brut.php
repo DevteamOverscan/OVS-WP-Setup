@@ -3,8 +3,6 @@
  * Limite les tentatives de connexion répétées à l'administration.
  *
  * @package OVS
- * @author Overscan
- * @link https://www.overscan.com
  */
 
 if (!defined('ABSPATH')) {
@@ -12,18 +10,38 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Bloque temporairement l'authentification après plusieurs échecs.
+ * Génération d'une clé unique stable basée sur IP uniquement
  */
-function check_attempted_login($user, $username, $password)
-{
-    if (get_transient('attempted_login')) {
-        $datas = get_transient('attempted_login');
+function ovs_bruteforce_key() {
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    return 'ovs_login_fail_' . md5($ip);
+}
 
-        if ($datas['tried'] >= 3) {
-            $until = get_option('_transient_timeout_' . 'attempted_login');
-            $time = time_to_go($until);
+/**
+ * Avant l'authentification, vérifier si l'utilisateur est bloqué
+ */
+function check_attempted_login($user, $username, $password) {
 
-            return new WP_Error('too_many_tried', sprintf(__('<strong>ERREUR</strong>: Limite d\'authentification atteinte, réessayez dans %1$s.'), $time));
+    $attempt_limit = 5;
+
+    $key = ovs_bruteforce_key();
+    $data = get_transient($key);
+
+    if (is_array($data) && ($data['tried'] ?? 0) >= $attempt_limit) {
+        
+        $timeout = get_option('_transient_timeout_' . $key);
+        $remaining = $timeout ? ($timeout - time()) : 0;
+        
+        if ($remaining > 0) {
+            $time = time_to_go($timeout);
+            
+            return new WP_Error(
+                'too_many_attempts',
+                sprintf(
+                    __('<strong>ERREUR</strong>: Trop de tentatives. Réessayez dans %s.', 'ovs'),
+                    $time
+                )
+            );
         }
     }
 
@@ -32,33 +50,31 @@ function check_attempted_login($user, $username, $password)
 add_filter('authenticate', 'check_attempted_login', 30, 3);
 
 /**
- * Incrémente le compteur après un échec de connexion.
+ * Incrémente le compteur après échec de login
  */
-function login_failed($username)
-{
-    if (get_transient('attempted_login')) {
-        $datas = get_transient('attempted_login');
-        $datas['tried']++;
+function login_failed($username) {
 
-        if ($datas['tried'] <= 3) {
-            set_transient('attempted_login', $datas, 300);
-        }
+    $key = ovs_bruteforce_key();
+    $data = get_transient($key);
+
+    if (!is_array($data)) {
+        $data = [
+            'tried' => 1,
+        ];
     } else {
-        $datas = array(
-            'tried' => 1
-        );
-        set_transient('attempted_login', $datas, 300);
+        $data['tried'] = ($data['tried'] ?? 0) + 1;
     }
+
+    set_transient($key, $data, 300);
 }
 add_action('wp_login_failed', 'login_failed', 10, 1);
 
 /**
- * Convertit une échéance en durée lisible.
+ * Formatage du temps restant
  */
-function time_to_go($timestamp)
-{
-    // Convertir le délai restant en unité compréhensible pour l'utilisateur.
-    $periods = array(
+function time_to_go($timestamp) {
+
+    $periods = [
         "seconde",
         "minute",
         "heure",
@@ -66,26 +82,20 @@ function time_to_go($timestamp)
         "semaine",
         "mois",
         "année"
-    );
-    $lengths = array(
-        "60",
-        "60",
-        "24",
-        "7",
-        "4.35",
-        "12"
-    );
-    $current_timestamp = time();
-    $difference = abs($current_timestamp - $timestamp);
-    for ($i = 0; $difference >= $lengths[$i] && $i < count($lengths) - 1; $i++) {
-        $difference /= $lengths[$i];
+    ];
+
+    $lengths = [60, 60, 24, 7, 4.35, 12];
+
+    $current = time();
+    $diff = max(0, $timestamp - $current);
+
+    $i = 0;
+
+    for ($i = 0; $diff >= $lengths[$i] && $i < count($lengths) - 1; $i++) {
+        $diff /= $lengths[$i];
     }
-    $difference = round($difference);
-    if (isset($difference)) {
-        if ($difference != 1) {
-            $periods[$i] .= "s";
-        }
-        $output = "$difference $periods[$i]";
-        return $output;
-    }
+
+    $diff = round($diff);
+
+    return $diff . ' ' . $periods[$i] . ($diff > 1 ? 's' : '');
 }
