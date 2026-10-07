@@ -75,7 +75,12 @@ class SetUp
     {
         global $wpdb;
 
-        $wpdb->query("TRUNCATE {$wpdb->prefix}woocommerce_sessions");
+        $sessions_table = $wpdb->prefix . 'woocommerce_sessions';
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($sessions_table))) !== $sessions_table) {
+            return;
+        }
+
+        $wpdb->query("TRUNCATE {$sessions_table}");
         $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key='_woocommerce_persistent_cart_" . get_current_blog_id() . "';");
         wp_cache_flush();
     }
