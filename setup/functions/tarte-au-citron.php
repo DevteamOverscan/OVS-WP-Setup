@@ -22,6 +22,11 @@ function gdpr_consent()
 
     global $tarteaucitron_has_services;
 
+    // Ne pas charger la version gratuite si tarteaucitron Pro est actif (voir tarteaucitron-pro.php).
+    if (function_exists('ovs_tac_pro_is_active') && ovs_tac_pro_is_active()) {
+        return;
+    }
+
     // Ne pas charger TarteAuCitron si aucun service n'est configuré.
     if (empty($tarteaucitron_has_services)) {
         return;

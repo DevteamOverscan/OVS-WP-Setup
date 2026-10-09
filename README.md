@@ -52,3 +52,7 @@ define('SMTP_USERNAME', '');
 define('SMTP_PASSWORD', '');
 define('SMTP_SECURE', 'tls');
 ```
+
+## Tarteaucitron Pro
+
+Pour les clients ayant une licence [tarteaucitron.io](https://tarteaucitron.io) Pro : coller le code d'installation dans **Réglages > Cookies (tarteaucitron)**. Champ vide = désactivé.
