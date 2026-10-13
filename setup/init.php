@@ -95,7 +95,8 @@ class SetUp
             'security-force-brut',
             'security-wp',
             'remove-comments',
-            'tarte-au-citron'
+            'tarte-au-citron',
+            'tarteaucitron-pro'
         ));
 
         foreach (get_option('features') as $file) {
