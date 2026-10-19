@@ -54,6 +54,7 @@ class Plugin
 
         register_deactivation_hook(__FILE__, array($this, 'plugin_deactivation'));
         add_action('admin_enqueue_scripts', array($this, 'admin_include_script'), 11);
+        add_action('wp_enqueue_scripts', array($this, 'ovs_setup_enqueue_scripts'), 100);
 
         $this->load_files();
         $setup = new SetUp();
@@ -81,6 +82,20 @@ class Plugin
         // Charger les feuilles de style de l'administration.
         wp_enqueue_style('admin-icon', plugin_dir_url(__FILE__) . '/assets/pictofont/style.css', false, '1.0.0');
         wp_enqueue_style('admin-ovs', plugin_dir_url(__FILE__) . '/assets/css/admin.css', false, '1.0.0');
+    }
+
+
+    /**
+     * Charge les scripts et styles pour le front.
+     */
+    public function ovs_setup_enqueue_scripts()
+    {
+        wp_enqueue_style(
+            'ovs-wp-setup-style',
+            plugin_dir_url(__FILE__) . '/assets/css/front.css',
+            [],
+            filemtime( plugin_dir_url(__FILE__) . '/assets/css/front.css')
+        );
     }
 
     /**
